@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Briefcase, Building2, Clock, ExternalLink, Filter, Globe } from 'lucide-react';
+import LandingPage from './LandingPage';
 import JobSubmissionForm from './JobSubmissionForm';
 import EmailSubscribe from './EmailSubscribe';
 
 export default function CopenhagenJobBoard() {
+  const [showLanding, setShowLanding] = useState(true);
   const [jobs, setJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -13,7 +15,6 @@ export default function CopenhagenJobBoard() {
   const [showAbout, setShowAbout] = useState(false);
 
   // Real English-only jobs from Copenhagen - January 2026
-  // All jobs explicitly require ENGLISH ONLY - NO DANISH REQUIRED
   const realJobs = [
     {
       id: 1,
@@ -36,7 +37,7 @@ export default function CopenhagenJobBoard() {
       company: 'Delta Airlines',
       location: 'Copenhagen Airport, Denmark',
       type: 'Full-time',
-      category: 'Customer Service',
+      category: 'Customer Success',
       salary: '320,000 - 420,000 DKK',
       posted: '1 week ago',
       description: 'Guide international travelers through ticketing, baggage, and boarding. Work in a fully English-speaking environment.',
@@ -261,7 +262,15 @@ export default function CopenhagenJobBoard() {
     setJobs(realJobs);
   }, []);
 
-  const categories = ['all', 'Sales', 'Tech', 'Customer Success', 'Marketing', 'Finance', 'Design', 'Product', 'Hospitality', 'Retail', 'Logistics', 'NGO/Development', 'Quality & Compliance', 'Sustainability'];
+  const handleBrowseJobs = (query = '') => {
+    setShowLanding(false);
+    if (query) {
+      setSearchTerm(query);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const categories = ['all', 'Sales', 'Tech', 'Customer Success', 'Marketing', 'Finance', 'Design', 'Product', 'Hospitality', 'Retail', 'Logistics', 'NGO/Development'];
   const jobTypes = ['all', 'Full-time', 'Part-time', 'Contract'];
 
   const filteredJobs = jobs.filter(job => {
@@ -273,6 +282,10 @@ export default function CopenhagenJobBoard() {
     
     return matchesSearch && matchesCategory && matchesType;
   });
+
+  if (showLanding) {
+    return <LandingPage onBrowseJobs={handleBrowseJobs} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
@@ -351,15 +364,17 @@ export default function CopenhagenJobBoard() {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Copenhagen English Jobs
-              </h1>
-              <p className="text-gray-600 mt-1 flex items-center gap-2">
-                <Globe className="w-4 h-4" />
-                English ONLY - No Danish Required
-              </p>
-            </div>
+            <button onClick={() => setShowLanding(true)} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <Globe className="w-8 h-8 text-blue-600" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Copenhagen English Jobs
+                </h1>
+                <p className="text-sm text-gray-600 flex items-center gap-2">
+                  English ONLY - No Danish Required
+                </p>
+              </div>
+            </button>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <MapPin className="w-4 h-4" />
               <span>Copenhagen, Denmark</span>
@@ -386,7 +401,6 @@ export default function CopenhagenJobBoard() {
         {/* Search and Filters */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search Bar */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -398,7 +412,6 @@ export default function CopenhagenJobBoard() {
               />
             </div>
 
-            {/* Filter Button (Mobile) */}
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="lg:hidden flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
@@ -407,7 +420,6 @@ export default function CopenhagenJobBoard() {
               Filters
             </button>
 
-            {/* Desktop Filters */}
             <div className="hidden lg:flex gap-4">
               <select
                 value={selectedCategory}
@@ -435,7 +447,6 @@ export default function CopenhagenJobBoard() {
             </div>
           </div>
 
-          {/* Mobile Filters Dropdown */}
           {showFilters && (
             <div className="lg:hidden mt-4 pt-4 border-t border-gray-200 space-y-3">
               <select
@@ -465,14 +476,12 @@ export default function CopenhagenJobBoard() {
           )}
         </div>
 
-        {/* Results Count */}
         <div className="mb-6">
           <p className="text-gray-600">
             Showing <span className="font-semibold text-gray-900">{filteredJobs.length}</span> English-only job{filteredJobs.length !== 1 ? 's' : ''} (no Danish required)
           </p>
         </div>
 
-        {/* Job Listings */}
         <div className="space-y-4">
           {filteredJobs.length === 0 ? (
             <div className="bg-white rounded-xl shadow-md p-12 text-center">
@@ -560,12 +569,10 @@ export default function CopenhagenJobBoard() {
           )}
         </div>
 
-        {/* Email Subscription */}
         <div className="mt-12">
           <EmailSubscribe />
         </div>
 
-        {/* Call to Action */}
         <div className="mt-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg p-8 text-center text-white">
           <h2 className="text-2xl font-bold mb-3">Post Your English-Speaking Job Opening</h2>
           <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
@@ -580,7 +587,6 @@ export default function CopenhagenJobBoard() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="bg-gray-900 text-gray-300 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -593,19 +599,19 @@ export default function CopenhagenJobBoard() {
             <div>
               <h4 className="text-white font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm">
+                <li><button onClick={() => setShowLanding(true)} className="hover:text-white transition-colors text-left">Home</button></li>
                 <li><button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:text-white transition-colors text-left">Browse Jobs</button></li>
                 <li><button onClick={() => setShowJobForm(true)} className="hover:text-white transition-colors text-left">Post a Job</button></li>
                 <li><button onClick={() => setShowAbout(true)} className="hover:text-white transition-colors text-left">About Us</button></li>
-                <li><a href="mailto:hello@copenhagenenglishjobs.com" className="hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="https://www.thelocal.dk/20250317/what-jobs-can-you-do-in-denmark-with-no-danish-at-all" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Living in Copenhagen</a></li>
+                <li><a href="https://www.thelocal.dk/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Living in Copenhagen</a></li>
                 <li><a href="https://www.nyidanmark.dk/en-GB" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Work Permits Guide</a></li>
-                <li><a href="https://www.salary.com/research/salary/benchmark/copenhagen-denmark" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Salary Guide</a></li>
                 <li><a href="https://www.howtoliveindenmark.com/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Career Advice</a></li>
+                <li><a href="mailto:hello@copenhagenenglishjobs.com" className="hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
           </div>
