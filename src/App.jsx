@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Briefcase, Building2, Clock, ExternalLink, Filter, Globe } from 'lucide-react';
+import JobSubmissionForm from './JobSubmissionForm';
+import EmailSubscribe from './EmailSubscribe';
 
 export default function CopenhagenJobBoard() {
   const [jobs, setJobs] = useState([]);
@@ -7,6 +9,8 @@ export default function CopenhagenJobBoard() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [showJobForm, setShowJobForm] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   // Real English-only jobs from Copenhagen - January 2026
   // All jobs explicitly require ENGLISH ONLY - NO DANISH REQUIRED
@@ -272,6 +276,77 @@ export default function CopenhagenJobBoard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {/* Job Submission Form Modal */}
+      {showJobForm && (
+        <JobSubmissionForm
+          onClose={() => setShowJobForm(false)}
+          onSuccess={() => {
+            setShowJobForm(false);
+            alert('Job submitted successfully! We\'ll review it and get back to you.');
+          }}
+        />
+      )}
+
+      {/* About Modal */}
+      {showAbout && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-8">
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-3xl font-bold text-gray-900">About Copenhagen English Jobs</h2>
+                <button onClick={() => setShowAbout(false)} className="text-gray-400 hover:text-gray-600">
+                  <span className="text-2xl">×</span>
+                </button>
+              </div>
+              
+              <div className="space-y-4 text-gray-700">
+                <p className="text-lg">
+                  <strong>The only job board focused exclusively on English-speaking opportunities in Copenhagen.</strong>
+                </p>
+                
+                <p>
+                  We know how frustrating it is to find jobs in Copenhagen when you don't speak Danish. That's why we created this platform - to connect international talent with companies that use English as their working language.
+                </p>
+                
+                <h3 className="text-xl font-bold text-gray-900 mt-6">Our Mission</h3>
+                <p>
+                  Make it easy for talented professionals to find English-only jobs in Copenhagen, and help companies access a global talent pool.
+                </p>
+                
+                <h3 className="text-xl font-bold text-gray-900 mt-6">Why Choose Us?</h3>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li><strong>English Only:</strong> Every job requires English only - no Danish needed</li>
+                  <li><strong>Verified Listings:</strong> We verify that companies actually use English as their working language</li>
+                  <li><strong>Daily Updates:</strong> New jobs added every day</li>
+                  <li><strong>Free for Job Seekers:</strong> Always free to browse and apply</li>
+                </ul>
+                
+                <h3 className="text-xl font-bold text-gray-900 mt-6">For Employers</h3>
+                <p>
+                  Looking to hire international talent? Post your English-speaking job openings and reach thousands of qualified candidates actively seeking opportunities in Copenhagen.
+                </p>
+                <p className="text-sm text-gray-600">
+                  Pricing: €99 for 30-day listing | €149 for featured placement
+                </p>
+                
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <p className="text-sm text-gray-600">
+                    Questions? Contact us at: <a href="mailto:hello@copenhagenenglishjobs.com" className="text-blue-600 hover:underline">hello@copenhagenenglishjobs.com</a>
+                  </p>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setShowAbout(false)}
+                className="mt-6 w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -485,13 +560,21 @@ export default function CopenhagenJobBoard() {
           )}
         </div>
 
+        {/* Email Subscription */}
+        <div className="mt-12">
+          <EmailSubscribe />
+        </div>
+
         {/* Call to Action */}
         <div className="mt-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg p-8 text-center text-white">
           <h2 className="text-2xl font-bold mb-3">Post Your English-Speaking Job Opening</h2>
           <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
             Reach international talent in Copenhagen. List jobs where Danish is NOT required and English is the working language.
           </p>
-          <button className="px-8 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-colors font-semibold">
+          <button 
+            onClick={() => setShowJobForm(true)}
+            className="px-8 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
+          >
             Post a Job
           </button>
         </div>
@@ -510,19 +593,19 @@ export default function CopenhagenJobBoard() {
             <div>
               <h4 className="text-white font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Browse Jobs</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Post a Job</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                <li><button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:text-white transition-colors text-left">Browse Jobs</button></li>
+                <li><button onClick={() => setShowJobForm(true)} className="hover:text-white transition-colors text-left">Post a Job</button></li>
+                <li><button onClick={() => setShowAbout(true)} className="hover:text-white transition-colors text-left">About Us</button></li>
+                <li><a href="mailto:hello@copenhagenenglishjobs.com" className="hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Living in Copenhagen</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Work Permits Guide</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Salary Calculator</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">No Danish? No Problem!</a></li>
+                <li><a href="https://www.thelocal.dk/20250317/what-jobs-can-you-do-in-denmark-with-no-danish-at-all" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Living in Copenhagen</a></li>
+                <li><a href="https://www.nyidanmark.dk/en-GB" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Work Permits Guide</a></li>
+                <li><a href="https://www.salary.com/research/salary/benchmark/copenhagen-denmark" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Salary Guide</a></li>
+                <li><a href="https://www.howtoliveindenmark.com/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Career Advice</a></li>
               </ul>
             </div>
           </div>
